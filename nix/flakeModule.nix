@@ -10,7 +10,20 @@ let
     functionTo
     raw;
 
-  baseClojurePackages = { };
+  cljNixPackages = {
+    inherit (pkgs)
+      clj-builder
+      deps-lock
+      mk-deps-cache
+      mkCljBin
+      mkCljLib
+      mkGraalBin
+      customJdk
+      mkBabashka
+      bbTasksFromFile;
+  };
+
+  baseClojurePackages = cljNixPackages;
 
   clojureSubmodule = types.submodule {
     options = {

@@ -1,10 +1,4 @@
 { inputs, lib, ... }:
-let
-  clojurePackages = ./clojurePackages.nix;
-  clojureProject = ./clojureProject.nix;
-  allModules = [ clojurePackages clojureProject ];
-
-in
 {
   systems = inputs.nixpkgs.lib.systems.flakeExposed;
 
@@ -16,7 +10,6 @@ in
   flake = {
     flakeModules = {
       default = ./flakeModule.nix;
-      inherit clojurePackages clojureProject;
     };
   };
 }
