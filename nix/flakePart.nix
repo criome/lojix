@@ -3,15 +3,18 @@
   systems = lib.systems.flakeExposed;
 
   imports = [
-    ./flakeModule.nix
+    inputs.nixpkgs.flakeModules.default
     inputs.clj-nix.flakeModules.default
+    ./packagesModule.nix
+    ./projectModule.nix
   ];
 
   perSystem = ./perSystem.nix;
 
   flake = {
     flakeModules = {
-      default = ./flakeModule.nix;
+      default = ./packagesModule.nix;
+      project = ./projectModule.nix;
     };
   };
 }
