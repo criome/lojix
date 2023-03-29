@@ -1,6 +1,8 @@
 # Definition of the `clojureProjects.${name}` submodule
 { name, self, config, lib, pkgs, ... }:
 let
+  inherit (lib) types;
+  inherit (types) mkOption;
   inherit (config.outputs) finalPackages finalOverlay;
 
   projectKey = name;
@@ -35,6 +37,49 @@ let
         (lib.attrNames config.packages);
   });
 
+  outputsSubmodule = types.submodule {
+    options = {
+      finalOverlay = mkOption {
+        type = types.raw;
+        readOnly = true;
+        internal = true;
+      };
+      finalPackages = mkOption {
+        # This must be raw because the Haskell package set also contains functions.
+        type = types.attrsOf types.raw;
+        readOnly = true;
+        description = ''
+          The final Haskell package set including local packages and any
+          overrides, on top of `basePackages`.
+        '';
+      };
+      localPackages = mkOption {
+        type = types.attrsOf types.package;
+        readOnly = true;
+        description = ''
+          The local Haskell packages in the project.
+
+          This is a subset of `finalPackages` containing only local
+          packages excluding everything else.
+        '';
+      };
+      devShell = mkOption {
+        type = types.package;
+        readOnly = true;
+        description = ''
+          The development shell derivation generated for this project.
+        '';
+      };
+      hlsCheck = mkOption {
+        type = types.package;
+        readOnly = true;
+        description = ''
+          The `hlsCheck` derivation generated for this project.
+        '';
+      };
+    };
+  };
+
   packageSubmodule = with types; submodule {
     options = {
       root = mkOption {
@@ -50,10 +95,9 @@ in
   options = {
     basePackages = mkOption {
       type = types.attrsOf raw;
-      description = '' '';
-      example = "pkgs.haskell.packages.ghc924";
-      default = pkgs.haskellPackages;
-      defaultText = lib.literalExpression "pkgs.haskellPackages";
+      description = ''Base Clojure packages'';
+      default = config.clojure.packages;
+      defaultText = lib.literalExpression "config.clojure.packages";
     };
 
     source-overrides = mkOption {
@@ -65,7 +109,7 @@ in
     };
 
     overrides = mkOption {
-      type = import ./haskell-overlay-type.nix { inherit lib; };
+      type = import ./clojureOverlayType.nix lib;
       description = ''
         Clojure package overrides for this project
       '';
@@ -101,23 +145,17 @@ in
 
 
   config = {
-    nixkpgs.overlays = [ ];
 
     outputs = {
       inherit devShell;
 
       finalOverlay = lib.composeManyExtensions [
-        # The order here matters.
-        #
-        # User's overrides (cfg.overrides) is applied **last** so
-        # as to give them maximum control over the final package
-        # set used.
         localPackagesOverlay
         (pkgs.clojure.lib.packageSourceOverrides config.source-overrides)
         config.overrides
       ];
 
-      finalPackages = config.basePackages.extend finalOverlay=;
+      finalPackages = config.basePackages.extend finalOverlay;
 
       localPackages = lib.mapAttrs
         (name: _: finalPackages."${name}")

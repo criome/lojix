@@ -1,9 +1,11 @@
 { inputs, lib, ... }:
 {
-  systems = inputs.nixpkgs.lib.systems.flakeExposed;
+  systems = lib.systems.flakeExposed;
 
-  imports = ./flakeModule.nix
-    ++ [ inputs.clj-nix.flakeModules.default ];
+  imports = [
+    ./flakeModule.nix
+    inputs.clj-nix.flakeModules.default
+  ];
 
   perSystem = ./perSystem.nix;
 

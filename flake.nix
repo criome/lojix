@@ -3,23 +3,22 @@
 
   inputs = {
     nixpkgs = { type = "indirect"; id = "nixpkgs"; };
-    lib = { type = "indirect"; id = "lib"; };
 
     clj-nix = {
       type = "indirect";
       id = "clj-nix";
-      nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     flake-parts = {
       type = "indirect";
       id = "flake-parts";
-      nixpkgs-lib.follows = "lib";
+      inputs.nixpkgs-lib.follows = "nixpkgs";
     };
 
   };
 
   outputs = inputs@{ self, flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; }
-      import ./nix/flakePart.nix;
+      (import ./nix/flakePart.nix);
 }

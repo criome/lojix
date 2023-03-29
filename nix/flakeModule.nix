@@ -1,47 +1,37 @@
-{ self, config, lib, flake-parts-lib, ... }:
+{ inputs, self, config, lib, flake-parts-lib, ... }:
 
 let
   inherit (flake-parts-lib)
     mkPerSystemOption;
   inherit (lib)
+    dontRecurseIntoAttrs
     mkOption
     types;
   inherit (types)
     functionTo
     raw;
 
-  cljNixPackages = {
-    inherit (pkgs)
-      clj-builder
-      deps-lock
-      mk-deps-cache
-      mkCljBin
-      mkCljLib
-      mkGraalBin
-      customJdk
-      mkBabashka
-      bbTasksFromFile;
-  };
+  clojurePackagesOverlay = self: super:
+    let
+      inherit (super.lib) makeScope newScope makeOverridable dontRecurseIntoAttrs;
 
-  baseClojurePackages = cljNixPackages;
+      mkClojurePackages = self: { };
+
+      clojurePackages = makeScope newScope mkClojurePackages;
+
+    in
+    { clojurePackages = dontRecurseIntoAttrs clojurePackages; };
+
+
 
   clojureSubmodule = types.submodule {
     options = {
-      runtime = mkOption {
-        type = types.derivation;
-        description = "Clojure runtime";
-        default = pkgs.clojure;
-        example = "pkgs.someCustomClojure";
-        defaultText = lib.literalExpression "pkgs.clojure";
-      };
-
-      packages = mkOption {
+      overlays = mkOption {
         description = "Clojure packages";
-        type = types.attrsOf raw;
-        example = "pkgs.someCustomClojurePackages";
-        default = baseClojurePackages;
+        type = import ./clojureOverlayType.nix lib;
+        example = "prev: final: { }";
+        default = clojurePackagesBaseOverlay;
       };
-
     };
   };
 in

@@ -1,6 +1,10 @@
-{ lib, pkgs, inputs', ... }:
+{ lib, config, ... }:
 let
   testClojureProject = { };
 
 in
-{ checks = { }; }
+{
+  checks = {
+    cljNixPackage = config.clojure.packages.clj-builder;
+  };
+}
