@@ -109,7 +109,7 @@ in
     };
 
     overrides = mkOption {
-      type = import ./clojureOverlayType.nix lib;
+      type = import ./overlayType.nix lib;
       description = ''
         Clojure package overrides for this project
       '';

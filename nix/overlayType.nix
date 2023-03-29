@@ -1,7 +1,7 @@
 lib:
 types.mkOptionType {
-  name = "nixpkgsOverlay";
-  description = "A nixpkgs overlay function";
+  name = "Overlay";
+  description = "An overlay function";
   descriptionClass = "noun";
   check = lib.isFunction;
   merge = _loc: defs:
@@ -9,7 +9,7 @@ types.mkOptionType {
       logWarning =
         # TODO: do not warn when lib.mkOrder/mkBefore/mkAfter are used unambiguously
         if builtins.length defs > 1
-        then builtins.trace "WARNING[nixpkgs.flakeModule]: Multiple overlays are applied in arbitrary order." null
+        then builtins.trace "WARNING[clojix.flakeModule]: Multiple overlays are applied in arbitrary order." null
         else null;
       overlays =
         map (x: x.value)

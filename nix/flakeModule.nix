@@ -14,21 +14,34 @@ let
   clojurePackagesOverlay = self: super:
     let
       inherit (super.lib) makeScope newScope makeOverridable dontRecurseIntoAttrs;
+      inherit (config.clojurePackages) makeClojurePackages;
 
-      mkClojurePackages = self: { };
-
-      clojurePackages = makeScope newScope mkClojurePackages;
+      clojurePackages = makeScope newScope makeClojurePackages;
 
     in
     { clojurePackages = dontRecurseIntoAttrs clojurePackages; };
 
-
+  overlayType = import ./overlayType.nix lib;
 
   clojureSubmodule = types.submodule {
     options = {
+      basePackages = mkOption {
+        description = "Clojure packages";
+        type = overlayType;
+        example = "prev: final: { }";
+        default = { };
+      };
+
+      makePackages = mkOption {
+        type = mkPkgsFromArgsType;
+        internal = true;
+        description = "Returns `clojurePackages` from arguments";
+        default = import ./makePackages.nix;
+      };
+
       overlays = mkOption {
         description = "Clojure packages";
-        type = import ./clojureOverlayType.nix lib;
+        type = types.listOf overlayType;
         example = "prev: final: { }";
         default = clojurePackagesBaseOverlay;
       };
@@ -36,6 +49,10 @@ let
   };
 in
 {
+  config = {
+    nixpkgs.overlays = [ clojurePackagesOverlay ];
+  };
+
   options = {
     clojure = mkOption {
       type = clojureSubmodule;
