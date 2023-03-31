@@ -1,7 +1,7 @@
 { name, config, lib, pkgs, ... }:
 let
-  inherit (lib) types;
-  inherit (types) mkOption functionTo;
+  inherit (lib) types mkOption;
+  inherit (types) functionTo;
   inherit (config.outputs) finalPackages finalOverlay;
 
   localPackagesOverlay = self: _:

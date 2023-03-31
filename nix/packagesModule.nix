@@ -21,7 +21,7 @@ in
             inherit (super.lib) makeScope newScope makeOverridable dontRecurseIntoAttrs;
             inherit (config.clojurePackages) makeClojurePackages;
 
-            clojurePackages = makeScope newScope makeClojurePackages;
+            clojurePackages = makeScope newScope (makeClojurePackages { });
 
           in
           { clojurePackages = dontRecurseIntoAttrs clojurePackages; };
@@ -37,7 +37,7 @@ in
           check = lib.isFunction;
         };
 
-        clojureSubmodule = types.submodule {
+        clojurePackagesSubmodule = types.submodule {
           options = {
             basePackages = mkOption {
               description = "Clojure packages";
@@ -65,7 +65,7 @@ in
               description = "Clojure packages";
               type = types.listOf overlayType;
               example = "[ (prev: final: { }) ]";
-              default = clojurePackagesBaseOverlay;
+              default = [ ];
             };
 
             projectOverlays = mkOption {
@@ -77,18 +77,11 @@ in
           };
         };
 
-        finalOverlay = lib.composeManyExtensions
-          # Last element has priority, so `perSystem` overlays rule
-          (topLevel.config.nixpkgs.overlays ++ config.nixpkgs.overlays);
-
-        finalPackages = config.clojure.makePackages
-          { inherit pkgs lib; overlays = [ finalOverlay ]; };
-
       in
       {
         options = {
           clojurePackages = mkOption {
-            type = clojureSubmodule;
+            type = clojurePackagesSubmodule;
             description = "Clojure configuration";
             default = { };
           };

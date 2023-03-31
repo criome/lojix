@@ -1,8 +1,7 @@
 # Definition of the `clojureProjects.${name}` submodule
 { name, self, config, lib, pkgs, ... }:
 let
-  inherit (lib) types;
-  inherit (types) mkOption;
+  inherit (lib) types mapAttrsToList mkOption;
   inherit (config.outputs) finalPackages finalOverlay;
 
   projectSubmodule = types.submoduleWith {

@@ -4,7 +4,6 @@
 
   imports = [
     inputs.nixpkgs.flakeModules.default
-    inputs.clj-nix.flakeModules.default
     ./packagesModule.nix
     ./projectModule.nix
   ];
