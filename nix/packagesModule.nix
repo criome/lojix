@@ -11,11 +11,8 @@ let
     functionTo
     raw;
 
-
 in
 {
-
-
   options = {
     perSystem = mkPerSystemOption ({ config, system, pkgs, ... }:
       let
@@ -53,14 +50,29 @@ in
               type = makeClojurePackagesType;
               internal = true;
               description = "Returns `clojurePackages` from arguments";
-              default = import ./makePackages.nix;
+              default = args@{ overlays ? [ ] }:
+                let
+                  finalArgs = args // {
+                    overlays = args.overlays
+                      ++ config.clojurePackages.overlays
+                      ++ config.clojurePackages.projectOverlays;
+                  };
+                in
+                import ./makePackages.nix finalArgs;
             };
 
             overlays = mkOption {
               description = "Clojure packages";
               type = types.listOf overlayType;
-              example = "prev: final: { }";
+              example = "[ (prev: final: { }) ]";
               default = clojurePackagesBaseOverlay;
+            };
+
+            projectOverlays = mkOption {
+              description = "Clojure project overlays";
+              type = types.listOf overlayType;
+              example = "prev: final: { }";
+              default = [ ];
             };
           };
         };

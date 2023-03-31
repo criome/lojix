@@ -1,5 +1,90 @@
-{ name, lib, pkgs, ... }:
+{ name, config, lib, pkgs, ... }:
 let
+  inherit (lib) types;
+  inherit (types) mkOption functionTo;
+  inherit (config.outputs) finalPackages finalOverlay;
+
+  localPackagesOverlay = self: _:
+    let
+      mkClojurePackageFromPackageNameAndConfig = name: value:
+        self.mkCljBin (value // { inherit name; });
+    in
+    lib.mapAttrs
+      mkClojurePackageFromPackageNameAndConfig
+      config.packages;
+
+  defaultBuildTools = cljPkgs: with cljPkgs; {
+    inherit
+      clojure;
+  };
+
+  nativeBuildInputs = lib.attrValues
+    (defaultBuildTools finalPackages // config.devShell.tools finalPackages);
+
+  mkShellArgs = config.devShell.mkShellArgs // {
+    nativeBuildInputs = (config.devShell.mkShellArgs.nativeBuildInputs or [ ])
+      ++ nativeBuildInputs;
+  };
+
+  devShell = finalPackages.shellFor (mkShellArgs // {
+    packages = p:
+      map
+        (name: p."${name}")
+        (lib.attrNames config.packages);
+  });
+
+  packageSubmodule = with types; submodule
+    ({ name, ... }:
+      {
+        options = {
+          jdkRunner = mkOption {
+            type = types.package;
+            description = ''
+              Derivation and clojure project version.
+            '';
+            default = jdk;
+          };
+
+          version = mkOption {
+            type = types.string;
+            description = ''
+              Derivation and clojure project version.
+            '';
+            default = "DEV";
+          };
+
+          main-ns = mkOption {
+            type = types.string;
+            description = ''
+              Main clojure namespace. A `-main` function is expected here.
+            '';
+            default = "${name}-main";
+          };
+
+          java-opts = mkOption {
+            description = ''
+              Extra arguments for the Java command.
+            '';
+            default = [ ];
+          };
+
+          buildCommand = mkOption {
+            description = ''
+              Command to build the jar application. If not provided, a
+              default builder is used:
+            '';
+            default = null;
+          };
+
+          projectSrc = mkOption {
+            type = types.path;
+            description = ''
+              Project source code.
+            '';
+          };
+        };
+      });
+
   outputsSubmodule = types.submodule {
     options = {
       finalOverlay = mkOption {
@@ -7,6 +92,7 @@ let
         readOnly = true;
         internal = true;
       };
+
       finalPackages = mkOption {
         # This must be raw because the Haskell package set also contains functions.
         type = types.attrsOf types.raw;
@@ -16,6 +102,7 @@ let
           overrides, on top of `basePackages`.
         '';
       };
+
       localPackages = mkOption {
         type = types.attrsOf types.package;
         readOnly = true;
@@ -26,6 +113,7 @@ let
           packages excluding everything else.
         '';
       };
+
       devShell = mkOption {
         type = types.package;
         readOnly = true;
@@ -33,13 +121,27 @@ let
           The development shell derivation generated for this project.
         '';
       };
-      hlsCheck = mkOption {
+
+      cljLspCheck = mkOption {
         type = types.package;
         readOnly = true;
         description = ''
-          The `hlsCheck` derivation generated for this project.
+          The `cljLspCheck` derivation generated for this project.
         '';
       };
+    };
+  };
+
+  cljLspCheckSubmodule = types.submodule {
+    options = {
+      enable = mkOption {
+        type = types.bool;
+        description = ''
+          Whether to enable a flake check to verify that Clojure-lsp works.
+        '';
+        default = false;
+      };
+
     };
   };
 
@@ -52,23 +154,26 @@ let
         '';
         default = true;
       };
+
       tools = mkOption {
         type = functionTo (types.attrsOf (types.nullOr types.package));
         description = ''
           Build tools for developing the Haskell project.
         '';
-        default = hp: { };
+        default = cljPkgs: { };
         defaultText = ''
           Build tools useful for Haskell development are included by default.
         '';
       };
-      hlsCheck = mkOption {
+
+      cljLspCheck = mkOption {
         default = { };
-        type = hlsCheckSubmodule;
+        type = cljLspCheckSubmodule;
         description = ''
           A [check](flake-parts.html#opt-perSystem.checks) to make sure that your IDE will work.
         '';
       };
+
       mkShellArgs = mkOption {
         type = types.attrsOf types.raw;
         description = ''
@@ -90,21 +195,6 @@ let
 in
 {
   options = {
-    basePackages = mkOption {
-      type = types.attrsOf raw;
-      description = ''Base Clojure packages'';
-      default = config.clojure.packages;
-      defaultText = lib.literalExpression "config.clojure.packages";
-    };
-
-    source-overrides = mkOption {
-      type = types.attrsOf (types.oneOf [ types.path types.str ]);
-      description = ''
-        Source overrides for Clojure packages
-      '';
-      default = { };
-    };
-
     overrides = mkOption {
       type = import ./overlayType.nix lib;
       description = ''
@@ -148,7 +238,6 @@ in
 
       finalOverlay = lib.composeManyExtensions [
         localPackagesOverlay
-        (pkgs.clojure.lib.packageSourceOverrides config.source-overrides)
         config.overrides
       ];
 
