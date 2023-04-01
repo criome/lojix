@@ -8,19 +8,17 @@
 let
   inherit (lib) extends makeExtensible composeManyExtensions;
 
-  cljNixOverlayDependencies = {
+  cljNixOverlayDependencies = self: {
+    callPackage = pkgs.newScope self;
+
     inherit (pkgs) stdenv fetchurl fetchgit fetchFromGitHub nix-prefetch-git
       clojure leiningen jdk jdk17_headless graalvmCEPackages
       runtimeShell unzip gnugrep jq
       runCommand writeShellScriptBin writeText linkFarm
-      rlwrap makeWrapper writeShellApplication
-      ;
+      rlwrap makeWrapper writeShellApplication;
   };
 
-  extensions = composeManyExtensions [
-    cljNixOverlay
-    overlays
-  ];
+  extensions = composeManyExtensions ([ cljNixOverlay ] ++ overlays);
 
   extensible-self = makeExtensible (extends extensions cljNixOverlayDependencies);
 

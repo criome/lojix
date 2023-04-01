@@ -1,5 +1,5 @@
 lib:
-types.mkOptionType {
+lib.types.mkOptionType {
   name = "Overlay";
   description = "An overlay function";
   descriptionClass = "noun";
@@ -19,4 +19,4 @@ types.mkOptionType {
             defs);
     in
     lib.composeManyExtensions overlays;
-};
+}

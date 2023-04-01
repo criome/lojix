@@ -14,14 +14,14 @@ let
 in
 {
   options = {
-    perSystem = mkPerSystemOption ({ config, system, pkgs, ... }:
+    perSystem = mkPerSystemOption ({ config, system, pkgs, ... }@perSystemArgs:
       let
         clojurePackagesOverlay = self: super:
           let
             inherit (super.lib) makeScope newScope makeOverridable dontRecurseIntoAttrs;
             inherit (config.clojurePackages) makeClojurePackages;
 
-            clojurePackages = makeScope newScope (makeClojurePackages { });
+            clojurePackages = makeScope newScope (self: makeClojurePackages { });
 
           in
           { clojurePackages = dontRecurseIntoAttrs clojurePackages; };
@@ -46,14 +46,16 @@ in
               default = { };
             };
 
-            makePackages = mkOption {
+            makeClojurePackages = mkOption {
               type = makeClojurePackagesType;
               internal = true;
               description = "Returns `clojurePackages` from arguments";
-              default = args@{ overlays ? [ ] }:
+              default = args:
                 let
                   finalArgs = args // {
-                    overlays = args.overlays
+                    inherit lib pkgs;
+                    cljNixOverlay = inputs.clj-nix.overlays.default;
+                    overlays = (args.overlays or [ ])
                       ++ config.clojurePackages.overlays
                       ++ config.clojurePackages.projectOverlays;
                   };

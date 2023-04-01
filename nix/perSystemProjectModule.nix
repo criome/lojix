@@ -22,6 +22,7 @@ in
     clojureProjects = mkOption {
       description = "Clojure projects";
       type = types.attrsOf projectSubmodule;
+      default = { };
     };
   };
 
