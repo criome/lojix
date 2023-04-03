@@ -1,8 +1,8 @@
-{ name, config, lib, pkgs, ... }:
+{ self', name, config, lib, pkgs, ... }:
 let
   inherit (lib) types mkOption;
   inherit (types) functionTo;
-  inherit (config.outputs) finalPackages finalOverlay;
+  inherit (config.outputs) finalPackages;
 
   localPackagesOverlay = self: _:
     let
@@ -42,7 +42,7 @@ let
             description = ''
               Derivation and clojure project version.
             '';
-            default = jdk;
+            default = pkgs.jdk;
           };
 
           version = mkOption {
@@ -195,6 +195,14 @@ let
 in
 {
   options = {
+    root = mkOption {
+      type = types.path;
+      description = ''
+        Source root for this project
+      '';
+      default = if name == "default" then self'.outPath else null;
+    };
+
     overrides = mkOption {
       type = import ./overlayType.nix lib;
       description = ''
@@ -209,7 +217,11 @@ in
       description = ''
         Attrset of local packages in the project repository.
       '';
-      default = { };
+      default = import ./findProjectPaths.nix {
+        inherit (config) root;
+        inherit lib name;
+      };
+
     };
 
     devShell = mkOption {
@@ -241,7 +253,7 @@ in
         config.overrides
       ];
 
-      finalPackages = { };
+      finalPackages = pkgs.clojurePackages;
 
       localPackages = lib.mapAttrs
         (name: _: finalPackages."${name}")

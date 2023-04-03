@@ -4,6 +4,8 @@ let
 
 in
 {
+  clojureProjects.default = { };
+
   packages = {
     cljNixPackage = pkgs.clojurePackages.clj-builder;
   };

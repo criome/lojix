@@ -18,7 +18,8 @@ in
       let
         clojurePackagesOverlay = self: super:
           let
-            inherit (super.lib) makeScope newScope makeOverridable dontRecurseIntoAttrs;
+            inherit (super.lib) makeScope makeOverridable dontRecurseIntoAttrs;
+            inherit (super) newScope;
             inherit (config.clojurePackages) makeClojurePackages;
 
             clojurePackages = makeScope newScope (self: makeClojurePackages { });

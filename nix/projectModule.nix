@@ -1,10 +1,17 @@
 { lib, flake-parts-lib, ... }:
-let inherit (flake-parts-lib)
-  mkPerSystemOption;
+let
+  inherit (flake-parts-lib)
+    mkPerSystemOption;
+
+  perSystemModule = { ... }: {
+    imports = [ ./perSystemProjectModule.nix ];
+
+    # config.clojureProjects = {};
+  };
 
 in
 {
   options = {
-    perSystem = mkPerSystemOption (import ./perSystemProjectModule.nix);
+    perSystem = mkPerSystemOption perSystemModule;
   };
 }
