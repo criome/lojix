@@ -1,8 +1,8 @@
 { self', name, config, lib, pkgs, ... }:
 let
-  inherit (lib) types mkOption;
+  inherit (lib) types mkOption mkDefault;
   inherit (types) functionTo;
-  inherit (config.outputs) finalPackages;
+  inherit (config.outputs) localPackages;
 
   localPackagesOverlay = self: _:
     let
@@ -12,26 +12,6 @@ let
     lib.mapAttrs
       mkClojurePackageFromPackageNameAndConfig
       config.packages;
-
-  defaultBuildTools = cljPkgs: with cljPkgs; {
-    inherit
-      clojure;
-  };
-
-  nativeBuildInputs = lib.attrValues
-    (defaultBuildTools finalPackages // config.devShell.tools finalPackages);
-
-  mkShellArgs = config.devShell.mkShellArgs // {
-    nativeBuildInputs = (config.devShell.mkShellArgs.nativeBuildInputs or [ ])
-      ++ nativeBuildInputs;
-  };
-
-  devShell = finalPackages.shellFor (mkShellArgs // {
-    packages = p:
-      map
-        (name: p."${name}")
-        (lib.attrNames config.packages);
-  });
 
   packageSubmodule = with types; submodule
     ({ name, ... }:
@@ -107,14 +87,11 @@ let
         type = types.attrsOf types.package;
         readOnly = true;
         description = ''
-          The local Haskell packages in the project.
-
-          This is a subset of `finalPackages` containing only local
-          packages excluding everything else.
+          The local Clojure packages in the project.
         '';
       };
 
-      devShell = mkOption {
+      devshell = mkOption {
         type = types.package;
         readOnly = true;
         description = ''
@@ -145,7 +122,7 @@ let
     };
   };
 
-  devShellSubmodule = types.submodule {
+  devshellSubmodule = types.submodule {
     options = {
       enable = mkOption {
         type = types.bool;
@@ -174,22 +151,11 @@ let
         '';
       };
 
-      mkShellArgs = mkOption {
-        type = types.attrsOf types.raw;
-        description = ''
-          Extra arguments to pass to `pkgs.mkShell`.
-        '';
-        default = { };
-        example = ''
-          {
-            shellHook = \'\'
-              # Re-generate .cabal files so HLS will work (per hie.yaml)
-              ''${pkgs.findutils}/bin/find -name package.yaml -exec hpack {} \;
-            \'\';
-          };
-        '';
-      };
     };
+  };
+
+  defaultDevshell = {
+    packages = mkDefault localPackages;
   };
 
 in
@@ -221,13 +187,12 @@ in
         inherit (config) root;
         inherit lib name;
       };
-
     };
 
-    devShell = mkOption {
-      type = devShellSubmodule;
+    babashkaScripts = mkOption {
+      type = types.lazyAttrsOf packageSubmodule;
       description = ''
-        Development shell configuration
+        Attrset of babashka scripts in the project repository.
       '';
       default = { };
     };
@@ -241,22 +206,24 @@ in
       '';
     };
 
-
+    enableDevshell = lib.mkEnableOption {
+      default = true;
+    };
   };
 
   config = {
+    devshell = defaultDevshell;
+
     outputs = {
-      inherit devShell;
+      devshell = config.devshell.shell;
 
       finalOverlay = lib.composeManyExtensions [
         localPackagesOverlay
         config.overrides
       ];
 
-      finalPackages = pkgs.clojurePackages;
-
       localPackages = lib.mapAttrs
-        (name: _: finalPackages."${name}")
+        (name: _: pkgs.clojurePackages "${name}")
         config.packages;
     };
   };

@@ -10,6 +10,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    devshell = {
+      url = github:sajban/devshell/betterFlakeModule;
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     flake-parts = {
       type = "indirect";
       id = "flake-parts";

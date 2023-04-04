@@ -1,12 +1,15 @@
 # Definition of the `clojureProjects.${name}` submodule
-{ name, self', config, lib, pkgs, ... }:
+{ name, self', config, lib, pkgs, options, inputs', ... }:
 let
   inherit (lib) types mapAttrsToList mkOption;
-  inherit (config.outputs) finalPackages finalOverlay;
+
+  devshellOptionsModule = {
+    imports = [ inputs'.devshell.flakeModules.devshell ];
+  };
 
   projectSubmodule = types.submoduleWith {
     specialArgs = { inherit pkgs self'; };
-    modules = [ ./projectSubmodule.nix ];
+    modules = [ ./projectSubmodule.nix devshellOptionsModule ];
   };
 
   mkProjectOverlays = name: value:
@@ -45,5 +48,13 @@ in
         in
         mapKeys dropDefaultPrefix project.outputs.localPackages)
       config.clojureProjects;
+
+    devShells =
+      mergeMapAttrs
+        (name: project:
+          lib.optionalAttrs project.enableDevshell {
+            "${name}" = project.outputs.devshell;
+          })
+        config.clojureProjects;
   };
 }
