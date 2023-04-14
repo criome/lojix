@@ -219,11 +219,11 @@ in
 
       finalOverlay = lib.composeManyExtensions [
         localPackagesOverlay
-        config.overrides
-      ];
+      ] ++ config.overrides;
 
       localPackages = lib.mapAttrs
-        (name: _: pkgs.clojurePackages "${name}")
+        (name: _: pkgs.clojurePackages."${name}")
+
         config.packages;
     };
   };
