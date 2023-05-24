@@ -4,8 +4,6 @@
 
   imports = [
     inputs.nixpkgs.flakeModules.default
-    ./packagesModule.nix
-    ./projectModule.nix
   ];
 
   perSystem = ./perSystem.nix;

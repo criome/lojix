@@ -4,9 +4,10 @@
   inputs = {
     nixpkgs = { type = "indirect"; id = "nixpkgs"; };
 
-    flakeWorld = {
-      url = "github:sajban/flakeWorld";
-      inputs.nixpkgs.follows = "nixpkgs";
+    flake-parts = {
+      type = "indirect";
+      id = "flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs";
     };
 
     clj-nix = {
@@ -22,7 +23,7 @@
 
   };
 
-  outputs = inputs@{ self, flakeWorld, ... }:
-    flakeWorld.lib.mkFlake { inherit inputs; }
+  outputs = inputs@{ self, flake-parts, ... }:
+    flake-parts.lib.mkFlake { inherit inputs; }
       (import ./nix/flakePart.nix);
 }
