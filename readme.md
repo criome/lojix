@@ -5,12 +5,11 @@ Nix from Clojure, and the basis for ClojixOS, an upcoming fork of
 ## Attributions
 ### Version
 #### Beta
-The concept owes inspiration from [Guix][4], of course. And the
-amazing coding interface of [Clojure][5] is another testament to the
-wisdom in desiging [Clojure][5] thus far, making it the most advanced
-and beautifully designed lisp dialect today, and therefore it must be
-similarly named with respect to *all known* coding interfaces
-today. Much Gratitude goes to all the great minds behind those
+The concept of "lisping" nix owes inspiration from [Guix][4]. The
+homoiconic design of [Clojure][5] qualifies it as the most advanced
+and beautifully designed programming interface today. The combination
+of those technologies would deeply revolutionize software
+production. Much Gratitude goes to all the great minds behind those
 projects.
 
 #### Alpha
