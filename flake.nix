@@ -17,7 +17,7 @@
     };
 
     devshell = {
-      url = github:sajban/devshell/betterFlakeModule;
+      url = "github:sajban/devshell/betterFlakeModule";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

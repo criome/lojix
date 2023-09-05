@@ -1,10 +1,15 @@
-{ lib, config, pkgs, ... }:
+{ lib, config, pkgs, clojix, ... }:
 let
-  testClojureProject = { };
+  inherit (pkgs) stdenv;
+
+  testProject = stdenv.mkDerivation {
+    name = "clojixTestProject";
+    src = clojix.sources.testProject;
+  };
 
 in
 {
   packages = {
-    default = pkgs.hello;
+    default = testProject;
   };
 }
