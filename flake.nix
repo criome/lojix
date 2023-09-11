@@ -2,28 +2,26 @@
   description = "A `flake-parts` module for Clojure development";
 
   inputs = {
+    flakeWorld = { type = "indirect"; id = "flakeWorld"; };
     nixpkgs = { type = "indirect"; id = "nixpkgs"; };
+    systems = { type = "indirect"; id = "systems"; };
 
-    flake-parts = {
+    devshell = {
       type = "indirect";
-      id = "flake-parts";
-      inputs.nixpkgs-lib.follows = "nixpkgs";
+      id = "devshell";
+      inputs = {
+        systems.follows = "systems";
+        nixpkgs.follows = "nixpkgs";
+      };
     };
-
+    
     clj-nix = {
       type = "indirect";
       id = "clj-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    devshell = {
-      url = "github:sajban/devshell/betterFlakeModule";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
   };
 
-  outputs = inputs@{ self, flake-parts, ... }:
-    flake-parts.lib.mkFlake { inherit inputs; }
-      (import ./nix/flakePart.nix);
+  outputs = inputs@{ self, flakeWorld, ... }:
+    flakeWorld.make.simple { inherit inputs; };
 }
