@@ -1,0 +1,4 @@
+
+# nixago: ignore-linked-files
+/.conform.yaml
+/treefmt.toml

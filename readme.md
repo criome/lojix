@@ -1,5 +1,5 @@
-# Clojix
-Nix from Clojure, and the basis for ClojixOS, an upcoming fork of
+# Lojix
+Nix from Clojure, and the basis for LojixOS, an upcoming fork of
 [NixOS][3].
 
 ## Attributions
@@ -15,7 +15,7 @@ projects.
 #### Alpha
 Most of the original draft is a direct adaptation of
 [haskell-flake][1].  Much gratitude also goes to the authors of
-[flake-parts][2], which clojix depends on.
+[flake-parts][2], which lojix depends on.
 
 [1]:https://github.com/srid/haskell-flake
 [2]:https://github.com/hercules-ci/flake-parts
