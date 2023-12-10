@@ -1,4 +1,5 @@
-
-# nixago: ignore-linked-files
-/.conform.yaml
-/treefmt.toml
+.clj-kondo/
+.cpcache/
+.lsp/
+.direnv/
+result*
