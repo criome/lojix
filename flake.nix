@@ -20,8 +20,9 @@
             # https://jlesquembre.github.io/clj-nix/options/
             {
               projectSrc = ./.;
-              name = "me.lafuente/cljdemo";
-              main-ns = "hello.core";
+              name = "sajban/lojix";
+              main-ns = "lojix.main";
+              version = "bootstrap";
 
               nativeImage.enable = true;
 
