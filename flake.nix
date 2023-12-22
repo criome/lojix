@@ -23,10 +23,7 @@
               name = "sajban/lojix";
               main-ns = "lojix.main";
               version = "bootstrap";
-
-              nativeImage.enable = true;
-
-              # customJdk.enable = true;
+              nativeImage.enable = false;
             }
           ];
         };
