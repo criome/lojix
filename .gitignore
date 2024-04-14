@@ -1,3 +1,4 @@
+.lsp/.cache/
 .clj-kondo/
 .cpcache/
 .direnv/
