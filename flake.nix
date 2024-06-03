@@ -1,5 +1,5 @@
 {
-  description = "A clj-nix flake";
+  description = "Lojix";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
