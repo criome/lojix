@@ -15,17 +15,13 @@
 
         default = clj-nix.lib.mkCljApp {
           pkgs = nixpkgs.legacyPackages.${system};
-          modules = [
-            # Option list:
-            # https://jlesquembre.github.io/clj-nix/options/
-            {
-              projectSrc = ./.;
-              name = "sajban/lojix";
-              main-ns = "lojix.main";
-              version = "bootstrap";
-              nativeImage.enable = false;
-            }
-          ];
+          modules = [{
+            projectSrc = ./.;
+            name = "sajban/lojix";
+            main-ns = "lojix.main";
+            version = "bootstrap";
+            nativeImage.enable = false;
+          }];
         };
 
       };
