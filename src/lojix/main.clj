@@ -1,12 +1,25 @@
 (ns lojix.main
   (:require
-   [clojure.string :as string]
    [malli.core :as m])
   (:gen-class))
 
-(def non-empty-string
-  (m/schema [:string {:min 1}]))
+(def Systems
+  [:enum
+   "aarch64-darwin"
+   "aarch64-linux"
+   "x86_64-darwin"
+   "x86_64-linux"])
+
+(def Derivation
+  [:map {:closed true}
+   [:name :string]
+   [:system Systems]])
+
+(def test-derivation {:name "test-derivation"
+                      :system "x86_64-linux"})
 
 (defn -main
   [& args]
-  (println (str "Validating something: " (m/schema? non-empty-string))))
+  (println (str
+            "Validating test-derivation: "
+            (m/validate Derivation test-derivation))))
