@@ -13,10 +13,15 @@
 (def Derivation
   [:map {:closed true}
    [:name :string]
-   [:system Systems]])
+   [:system Systems]
+   [:builder :string]
+   [:args {:optional true} [:vector :string]]
+   [:outputs {:optional true :default ["out"]} [:vector :string]]])
 
 (def test-derivation {:name "test-derivation"
-                      :system "x86_64-linux"})
+                      :system "x86_64-linux"
+		      :builder "/bin/sh"
+		      :args ["-c" "echo hello world > $out"]})
 
 (defn -main
   [& args]
