@@ -1,4 +1,7 @@
-{:deps {metosin/malli {:mvn/version "0.16.2"}
-        org.clojure/clojure {:mvn/version "1.11.3"}},
+{:aliases {:test {:extra-deps {lambdaisland/kaocha {:mvn/version "1.91.1392"}}
+                  :main-opts ["-m" "kaocha.runner"]}}
+
+ :deps {metosin/malli {:mvn/version "0.16.3"}
+        org.clojure/clojure {:mvn/version "1.11.4"}}
 
  :paths ["src"]}
