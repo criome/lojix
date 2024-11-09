@@ -1,4 +1,4 @@
-(ns lojix.main
+(ns lojix.nix
   (:require
    [malli.core :as m])
   (:gen-class))
@@ -18,13 +18,3 @@
    [:args {:optional true} [:vector :string]]
    [:outputs {:optional true :default ["out"]} [:vector :string]]])
 
-(def test-derivation {:name "test-derivation"
-                      :system "x86_64-linux"
-		      :builder "/bin/sh"
-		      :args ["-c" "echo hello world > $out"]})
-
-(defn -main
-  [& args]
-  (println (str
-            "Validating test-derivation: "
-            (m/validate Derivation test-derivation))))
