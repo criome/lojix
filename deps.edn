@@ -1,10 +1,7 @@
-{:paths ["src"]
+{:deps {lojix/lib {:local/root "lib"}
+	lojix/cli {:local/root "cli"}}
 
- :deps {lojix/lib {:local/root "lib"}
-	metosin/malli {:mvn/version "0.16.4"}
-        org.clojure/clojure {:mvn/version "1.12.0"}}
-
- :aliases {:main-paths [ "lib/src" "cli" ]
+ :aliases {:main-paths [ "lib/src" "cli/src" ]
 	   :test-paths [ "lib/test" "cli/test" ]
 	   
 	   :test {:extra-paths :test-paths

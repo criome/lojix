@@ -1,0 +1,6 @@
+{:deps {lojix/lib {:local/root "../lib"}
+        com.github.piotr-yuxuan/malli-cli {:mvn/version "2.1.2"}}
+
+ :aliases {:test {:extra-deps {lambdaisland/kaocha {:mvn/version "1.91.1392"}}
+		  :exec-fn kaocha.runner/exec-fn
+		  :exec-args {}}}}
