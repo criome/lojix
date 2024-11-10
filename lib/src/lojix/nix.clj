@@ -1,7 +1,6 @@
 (ns lojix.nix
   (:require
-   [malli.core :as m])
-  (:gen-class))
+   [malli.core :as m]))
 
 (def Systems
   [:enum
