@@ -3,4 +3,5 @@
  
  :aliases {:test {:extra-paths [ "test" ]
 		  :extra-deps {lambdaisland/kaocha {:mvn/version "1.91.1392"}}
+		  :main-opts   ["--main" "kaocha.runner"]
                   :exec-fn kaocha.runner/exec-fn}}}
