@@ -2,19 +2,39 @@ use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct CoreKeys {
-    pub top_left: CoreKeyRow,
-    pub top_right: CoreKeyRow,
-    pub mid_left: CoreKeyRow,
-    pub mid_right: CoreKeyRow,
-    pub bottom_left: CoreKeyRow,
-    pub bottom_right: CoreKeyRow,
+    pub left: HandKeys,
+    pub right: HandKeys,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct CoreKeyRow {
-    pub mars: Key,
-    pub jupiter: Key,
-    pub saturn: Key,
-    pub venus: Key,
-    pub mercury: Key,
+pub struct HandKeys {
+    pub upper: HandKeyRow,
+    pub mid: HandKeyRow,
+    pub lower: HandKeyRow,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct HandKeyRow {
+    pub mars: KeyboardKey,
+    pub jupiter: KeyboardKey,
+    pub saturn: KeyboardKey,
+    pub venus: KeyboardKey,
+    pub mercury: KeyboardKey,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub enum Style {
+    Coleremak
+}
+
+impl Style {
+    fn to_helix_keymap(&Self) -> Keymap {
+	
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Keymap {
+    normal: NormalKeymap,
+    insert: InsertKeymap,
 }
